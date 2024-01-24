@@ -1,23 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, onChangeNumber, number, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, onChangeNumber, number, Button, FlatList } from 'react-native';
 import React from 'react';
 
 export default function App() {
   const [number1, onChangeNumber1] = React.useState(null);
   const [number2, onChangeNumber2] = React.useState(null);
   const [result, setResult] = React.useState(null);
+  const [history, setHistory] = React.useState([]);
 
   const sum = () => {
-    setResult(parseFloat(number1) + parseFloat(number2));
+    const result = parseFloat(number1) + parseFloat(number2);
+    setResult(result);
+    setHistory([...history, { key: Math.random().toString(), data: `${number1} + ${number2} = ${result}` }]);
   }
   
   const sub = () => {
-    setResult(parseFloat(number1) - parseFloat(number2));
+    const result = parseFloat(number1) - parseFloat(number2);
+    setResult(result);
+    setHistory([...history, { key: Math.random().toString(), data: `${number1} - ${number2} = ${result}` }]);
   }
 
   return (
     <View style={styles.container}>
       <Text>Simple calculator app</Text>
+      <Text>Result: {result}</Text>
       <TextInput
         style={styles.input}
         onChangeText={onChangeNumber1}
@@ -34,18 +40,23 @@ export default function App() {
       />
       <View style={styles.buttonContainer}>
         <View style={styles.button}>
-          <Button title="+" 
+          <Button title="+"
             onPress={sum}
           />
         </View>
         <View style={styles.button}>
-          <Button title="-" 
+          <Button title="-"
             onPress={sub}
           />
         </View>
       </View>
 
-      <Text>Result: {result}</Text>
+      <Text>History</Text>
+      <FlatList
+        style={styles.list}
+        data={history}
+        renderItem={({ item }) => <Text>{item.data}</Text>}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -76,4 +87,7 @@ const styles = StyleSheet.create({
   button: {
     width: 50,
   },
+  list: {
+    maxHeight: 200,
+  }
 });
