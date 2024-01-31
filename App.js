@@ -1,93 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, onChangeNumber, number, Button, FlatList } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Calculator from './components/calculator';
+import History from './components/history';
+
+const Stack = createStackNavigator();
 
 export default function App() {
-  const [number1, onChangeNumber1] = React.useState(null);
-  const [number2, onChangeNumber2] = React.useState(null);
-  const [result, setResult] = React.useState(null);
-  const [history, setHistory] = React.useState([]);
+  const [history, setHistory] = useState([]);
 
-  const sum = () => {
-    const result = parseFloat(number1) + parseFloat(number2);
-    setResult(result);
-    setHistory([...history, { key: Math.random().toString(), data: `${number1} + ${number2} = ${result}` }]);
-  }
-  
-  const sub = () => {
-    const result = parseFloat(number1) - parseFloat(number2);
-    setResult(result);
-    setHistory([...history, { key: Math.random().toString(), data: `${number1} - ${number2} = ${result}` }]);
-  }
+  const handleCalculate = calculation => {
+    setHistory([...history, { key: Math.random().toString(), data: calculation }]);
+  };
 
   return (
-    <View style={styles.container}>
-      <Text>Simple calculator app</Text>
-      <Text>Result: {result}</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeNumber1}
-        value={number1}
-        placeholder="Insert number"
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeNumber2}
-        value={number2}
-        placeholder="Insert number"
-        keyboardType="numeric"
-      />
-      <View style={styles.buttonContainer}>
-        <View style={styles.button}>
-          <Button title="+"
-            onPress={sum}
-          />
-        </View>
-        <View style={styles.button}>
-          <Button title="-"
-            onPress={sub}
-          />
-        </View>
-      </View>
-
-      <Text>History</Text>
-      <FlatList
-        style={styles.list}
-        data={history}
-        renderItem={({ item }) => <Text>{item.data}</Text>}
-      />
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Calculator">
+        <Stack.Screen name="Calculator">
+          {props => <Calculator {...props} onCalculate={handleCalculate} />}
+        </Stack.Screen>
+        <Stack.Screen name="History">
+          {props => <History {...props} history={history} />}
+        </Stack.Screen>
+      </Stack.Navigator>
       <StatusBar style="auto" />
-    </View>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    width: '60%',
-    marginBottom: 10,
-    textAlign: 'center',
-    marginTop: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '30%',
-    marginBottom: 20,
-  },
-  button: {
-    width: 50,
-  },
-  list: {
-    maxHeight: 200,
-  }
-});
